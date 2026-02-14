@@ -8,7 +8,9 @@ Container Builds Statuses:
 
 > [!IMPORTANT]
 > This is an **UNOFFICIAL** docker release of [Out Of Your Element (OOYE)](https://gitdab.com/cadence/out-of-your-element). For detailed information about the project itself, please visit the [official repository](https://gitdab.com/cadence/out-of-your-element/).
+>
 > If you are having issues, please try without docker first. Otherwise the original developers will not be able to help you.
+> 
 > **DO NOT ASK THE DEVELOPERS FOR HELP WITH DOCKER. THEY WON'T GIVE IT**
 
 If you need to make a container of your own, the source code for these build can be found at [sim2kid/ooye-docker](https://github.com/sim2kid/ooye-docker).
@@ -38,7 +40,9 @@ docker-compose run ooye setup
 
 > [!NOTE]
 > The setup process is a script that must be run inside the container to generate the necessary configuration files.
+> 
 > You will need to interact in a console to complete this setup process.
+> 
 > Ensure the setup script tells you that it is finished before running normally.
 
 Using Docker CLI:
@@ -166,7 +170,9 @@ docker build --build-arg OOYE_VERSION=v3.3 -t ooye .
 If you are having issues running the bridge in container mode, reach out to [@sim2kid:starfallinn.com](https://matrix.to/#/@sim2kid:starfallinn.com) on the [matrix #containers room](https://matrix.to/#/!PkwISXahWEKtmIhrIG:cadence.moe?via=cadence.moe&via=ucc.asn.au&via=starfallinn.com) room.
 
 > As a reminder, this is an **UNOFFICIAL** docker release of [Out Of Your Element (OOYE)](https://gitdab.com/cadence/out-of-your-element).
+> 
 > Support for this project is not provided by the original developers.
+> 
 > **DO NOT ASK THE DEVELOPERS FOR HELP WITH DOCKER. THEY WON'T GIVE IT**
 
 If I am not to be found in the OOYE space, you can try finding me in the [Starfall Inn](https://matrix.to/#/#inn:starfallinn.com).
