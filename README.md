@@ -10,7 +10,7 @@
 
 ## Tags
 
-Automated builds are handled by GitHub Actions and pushed to the GitHub Container Registry (GHCR):
+Automated builds are handled by GitHub Actions and pushed to Docker Hub:
 
 - `latest`: Tracks the latest stable tag from the official OOYE repository (dynamically determined).
 - `nightly`: Tracks the `main` branch of the official OOYE repository (development).
@@ -33,7 +33,7 @@ docker-compose run ooye setup
 
 Using Docker CLI:
 ```bash
-docker run -it -v ooye_data:/data ghcr.io/sim2kid/ooye-docker:latest setup
+docker run -it -v ooye_data:/data sim2kid/ooye-docker:latest setup
 ```
 
 Follow the interactive prompts in your terminal.
@@ -46,7 +46,7 @@ docker-compose run ooye registration
 ```
 or
 ```bash
-docker run -it --rm -v ooye_data:/data ghcr.io/sim2kid/ooye-docker:latest registration
+docker run -it --rm -v ooye_data:/data sim2kid/ooye-docker:latest registration
 ```
 
 Copy the output and provide it to your homeserver (Synapse or Conduit) as instructed in the setup terminal. Once the homeserver is configured and restarted, the setup script will detect the registration and complete.
@@ -59,7 +59,7 @@ docker-compose run ooye registration
 ```
 or
 ```bash
-docker run -it -v ooye_data:/data ghcr.io/sim2kid/ooye-docker:latest registration
+docker run -it -v ooye_data:/data sim2kid/ooye-docker:latest registration
 ```
 
 ### 2. Production Mode
@@ -73,7 +73,7 @@ docker-compose up -d
 
 Using Docker CLI:
 ```bash
-docker run -d --name ooye -v ooye_data:/data -p 6693:6693 ghcr.io/sim2kid/ooye-docker:latest
+docker run -d --name ooye -v ooye_data:/data -p 6693:6693 sim2kid/ooye-docker:latest
 ```
 
 ## Volumes

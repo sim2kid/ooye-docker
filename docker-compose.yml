@@ -1,6 +1,6 @@
 services:
   ooye:
-    image: ghcr.io/sim2kid/ooye-docker:latest
+    image: sim2kid/ooye-docker:latest
     container_name: ooye
     restart: unless-stopped
     ports:
