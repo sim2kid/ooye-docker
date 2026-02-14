@@ -2,11 +2,14 @@
 
 [![Releases](https://img.shields.io/gitea/v/release/cadence/out-of-your-element?gitea_url=https%3A%2F%2Fgitdab.com&style=plastic&color=green)](https://gitdab.com/cadence/out-of-your-element/releases) [![Discuss on Matrix](https://img.shields.io/badge/discuss-%23out--of--your--element-white?style=plastic)](https://matrix.to/#/#out-of-your-element:cadence.moe)
 
+Container Builds Statuses:
 ![Nightly](https://github.com/sim2kid/ooye-docker/actions/workflows/nightly.yml/badge.svg)
 ![Latest](https://github.com/sim2kid/ooye-docker/actions/workflows/stable.yml/badge.svg)
 
 > [!IMPORTANT]
 > This is an **UNOFFICIAL** docker release of [Out Of Your Element (OOYE)](https://gitdab.com/cadence/out-of-your-element). For detailed information about the project itself, please visit the [official repository](https://gitdab.com/cadence/out-of-your-element/).
+> If you are having issues, please try without docker first. Otherwise the original developers will not be able to help you.
+> **DO NOT ASK THE DEVELOPERS FOR HELP WITH DOCKER. THEY WON'T GIVE IT**
 
 If you need to make a container of your own, the source code for these build can be found at [sim2kid/ooye-docker](https://github.com/sim2kid/ooye-docker).
 
