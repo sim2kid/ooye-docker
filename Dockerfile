@@ -16,10 +16,12 @@ WORKDIR /app
 # If OOYE_VERSION is "latest", we lookup the latest tag on git.
 ARG OOYE_VERSION=latest
 RUN if [ "${OOYE_VERSION}" = "latest" ]; then \
-        OOYE_VERSION=$(git ls-remote --tags --sort='v:refname' https://gitdab.com/cadence/out-of-your-element.git | grep -v '\^{}' | tail -n1 | sed 's/.*\///'); \
+        VERSION=$(git ls-remote --tags --sort='v:refname' https://gitdab.com/cadence/out-of-your-element.git | grep -v '\^{}' | tail -n1 | sed 's/.*\///'); \
+    else \
+        VERSION=${OOYE_VERSION}; \
     fi; \
-    echo "Cloning OOYE version: ${OOYE_VERSION}" && \
-    git clone --depth 1 --branch ${OOYE_VERSION} https://gitdab.com/cadence/out-of-your-element.git .
+    echo "Cloning OOYE version: ${VERSION}" && \
+    git clone --depth 1 --branch "${VERSION}" https://gitdab.com/cadence/out-of-your-element.git .
 
 # Install dependencies
 RUN npm install
