@@ -88,12 +88,19 @@ The image uses a volume mounted at `/data` to store:
 - `ooye.db`: The database file.
 - `registration.yaml`: The Matrix registration file.
 
+## Backups
+
+> [!CAUTION]
+> This is an unsupported solution. **You are responsible for your own data.**
+>
+> It is **strongly recommended** to take regular backups of your database (`ooye.db`). Automated backup solutions are highly encouraged to prevent data loss in case of container failure or corruption.
+
 ## Migration Guide
 
 If you are migrating an existing OOYE installation to Docker, you can move your existing database and registration files into the Docker volume.
 
 > [!WARNING]
-> This docker container is UNOFFICIAL and may be broken. ALWAYS BACK UP YOUR DATA before making ANY changes.
+> This docker container is UNOFFICIAL and UNSUPPORTED and may be broken. ALWAYS BACK UP YOUR DATA before making ANY changes.
 
 ### 1. Identify your files
 Locate your existing `ooye.db` and `registration.yaml` files from your previous installation.
@@ -149,11 +156,12 @@ docker build --build-arg OOYE_VERSION=v3.3 -t ooye .
 
 ---
 
-## Issues & Support
+## Issues & Help
 
 If you are having issues running the bridge in container mode, reach out to [@sim2kid:starfallinn.com](https://matrix.to/#/@sim2kid:starfallinn.com) on the [matrix #containers room](https://matrix.to/#/!PkwISXahWEKtmIhrIG:cadence.moe?via=cadence.moe&via=ucc.asn.au&via=starfallinn.com) room.
 
 > As a reminder, this is an **UNOFFICIAL** docker release of [Out Of Your Element (OOYE)](https://gitdab.com/cadence/out-of-your-element).
-> Support for this project is not provided by the developers.
+> Support for this project is not provided by the original developers.
+> **DO NOT ASK THE DEVELOPERS FOR HELP WITH DOCKER. THEY WON'T GIVE IT**
 
 If I am not to be found in the OOYE space, you can try finding me in the [Starfall Inn](https://matrix.to/#/#inn:starfallinn.com).
