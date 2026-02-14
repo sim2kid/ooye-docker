@@ -1,0 +1,35 @@
+FROM node:22-slim
+
+# Install git and other potential build dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    python3 \
+    make \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set working directory
+WORKDIR /app
+
+# Clone the repository
+# We use an ARG for the version/tag so it can be updated during build
+ARG OOYE_VERSION=main
+RUN git clone https://gitdab.com/cadence/out-of-your-element.git . \
+    && git checkout ${OOYE_VERSION}
+
+# Install dependencies
+RUN npm install
+
+# Create data directory for persistence
+RUN mkdir /data && chmod 777 /data
+
+# Copy entrypoint script
+COPY entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+# Expose the default port
+EXPOSE 6693
+
+# Set the entrypoint
+ENTRYPOINT ["entrypoint.sh"]
+CMD ["start"]

@@ -1,0 +1,14 @@
+{
+  "name": "ooye-docker",
+  "version": "1.0.0",
+  "description": "Docker build and automation for Out Of Your Element (OOYE)",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sim2kid/ooye-docker.git"
+  },
+  "author": "",
+  "license": "ISC"
+}

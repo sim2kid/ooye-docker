@@ -1,0 +1,14 @@
+services:
+  ooye:
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER:-user}/ooye-docker:latest
+    container_name: ooye
+    restart: unless-stopped
+    ports:
+      - "6693:6693"
+    volumes:
+      - ooye_data:/data
+    # To run setup mode, uncomment the following line and run: docker-compose run ooye setup
+    # command: setup
+
+volumes:
+  ooye_data:
