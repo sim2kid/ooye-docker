@@ -7,14 +7,14 @@ prepare_persistent_file() {
     DATA_PATH="/data/$FILENAME"
 
     # If it's already a symlink, we're good
-    if [ -L "$FILENAME" ]; then
+    if [ -L "/app/$FILENAME" ]; then
         return
     fi
 
     # If the file exists in the app dir but not in /data, move it to /data
-    if [ -f "$FILENAME" ] && [ ! -f "$DATA_PATH" ]; then
+    if [ -f "/app/$FILENAME" ] && [ ! -f "$DATA_PATH" ]; then
         echo "Moving existing $FILENAME to /data"
-        mv "$FILENAME" "$DATA_PATH"
+        mv "/app/$FILENAME" "$DATA_PATH"
     fi
 
     # Ensure the target file exists in /data so symlink doesn't point to nothing
@@ -24,12 +24,28 @@ prepare_persistent_file() {
     fi
 
     # Create the symlink
-    ln -sf "$DATA_PATH" "$FILENAME"
+    ln -sf "$DATA_PATH" "/app/$FILENAME"
 }
 
-# Prepare persistent files
+# 1. Symlink everything already in /data to /app
+if [ -d "/data" ]; then
+    for file in /data/*; do
+        [ -e "$file" ] || continue # Handle empty directory
+        filename=$(basename "$file")
+        target="/app/$filename"
+        if [ ! -L "$target" ]; then
+            echo "Linking $file to $target"
+            ln -sf "$file" "$target"
+        fi
+    done
+fi
+
+# 2. Explicitly ensure essential files exist and are linked (for new installs)
 prepare_persistent_file "ooye.db"
 prepare_persistent_file "registration.yaml"
+
+# Change to app directory
+cd /app
 
 if [ "$1" = "setup" ]; then
     echo "--- Entering Setup Mode ---"
