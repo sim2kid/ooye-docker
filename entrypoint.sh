@@ -35,9 +35,28 @@ if [ "$1" = "setup" ]; then
     echo "--- Entering Setup Mode ---"
     echo "This will guide you through the OOYE configuration."
     npm run setup
+
+    echo ""
+    echo "--- Setup Complete ---"
+    echo "Your registration.yaml has been generated/updated."
+    if [ -f "/data/registration.yaml" ]; then
+        echo "Contents of /data/registration.yaml:"
+        echo "-----------------------------------"
+        cat /data/registration.yaml
+        echo "-----------------------------------"
+    else
+        echo "Error: /data/registration.yaml not found."
+    fi
 elif [ "$1" = "start" ]; then
     echo "--- Starting OOYE in Production Mode ---"
     npm run start
+elif [ "$1" = "registration" ]; then
+    if [ -f "/data/registration.yaml" ]; then
+        cat /data/registration.yaml
+    else
+        echo "Error: /data/registration.yaml not found."
+        exit 1
+    fi
 else
     # Allow running custom commands
     exec "$@"

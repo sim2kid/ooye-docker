@@ -1,6 +1,6 @@
 services:
   ooye:
-    image: ghcr.io/${GITHUB_REPOSITORY_OWNER:-user}/ooye-docker:latest
+    image: ghcr.io/sim2kid/ooye-docker:latest
     container_name: ooye
     restart: unless-stopped
     ports:
