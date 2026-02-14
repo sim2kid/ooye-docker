@@ -10,9 +10,9 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'OOYE version to build (tag or branch)'
+        description: 'OOYE version to build (tag, branch, or "latest")'
         required: true
-        default: 'main'
+        default: 'latest'
 
 env:
   REGISTRY: ghcr.io

@@ -1,20 +1,30 @@
 # Out Of Your Element (OOYE) Docker
 
-This repository provides a Dockerized version of [Out Of Your Element (OOYE)](https://gitdab.com/cadence/out-of-your-element), a Matrix-Discord bridge.
+[![Releases](https://img.shields.io/gitea/v/release/cadence/out-of-your-element?gitea_url=https%3A%2F%2Fgitdab.com&style=plastic&color=green)](https://gitdab.com/cadence/out-of-your-element/releases) [![Discuss on Matrix](https://img.shields.io/badge/discuss-%23out--of--your--element-white?style=plastic)](https://matrix.to/#/#out-of-your-element:cadence.moe)
 
-## Features
+![Nightly Build](https://github.com/sim2kid/ooye-docker/actions/workflows/docker-publish.yml/badge.svg?branch=main&label=nightly)
+![Latest Build](https://github.com/sim2kid/ooye-docker/actions/workflows/docker-publish.yml/badge.svg?branch=main&label=latest)
+![Tagged Build](https://github.com/sim2kid/ooye-docker/actions/workflows/docker-publish.yml/badge.svg?branch=main&label=tagged)
 
-- **Automated Builds**: GitHub Actions automatically builds and pushes the image to GitHub Container Registry (GHCR).
-    - `latest`: Tracks the latest stable tag from the official OOYE repository.
-    - `nightly`: Tracks the `main` branch of the official OOYE repository (development).
-- **Two-Phase Setup**: Supports an interactive setup mode and a production start mode.
-- **Persistence**: Easily manage persistent data (`ooye.db` and `registration.yaml`) via volumes.
+> [!IMPORTANT]
+> This is an **UNOFFICIAL** docker release of [Out Of Your Element (OOYE)](https://gitdab.com/cadence/out-of-your-element). For detailed information about the project itself, please visit the [official repository](https://gitdab.com/cadence/out-of-your-element/).
+
+## Tags
+
+Automated builds are handled by GitHub Actions and pushed to the GitHub Container Registry (GHCR):
+
+- `latest`: Tracks the latest stable tag from the official OOYE repository (dynamically determined).
+- `nightly`: Tracks the `main` branch of the official OOYE repository (development).
+- `<version>`: Specific versions are tagged according to the official release (e.g., `v3.3`).
 
 ## How to Use
 
+> [!WARNING]
+> You **MUST** run the setup mode before the bridge will function.
+
 ### 1. Setup Mode (Required once)
 
-First, you need to run the setup to configure the bridge and generate the `registration.yaml` file.
+First, you need to run the setup to configure the bridge and generate the `registration.yaml` file. This process follows the [official installation instructions](https://gitdab.com/cadence/out-of-your-element/src/branch/main/docs/get-started.md).
 
 Using Docker Compose:
 ```bash
@@ -74,7 +84,11 @@ The image uses a volume mounted at `/data` to store:
 
 ## Configuration
 
-The `Dockerfile` clones the `main` branch by default. You can build a specific version using build arguments:
+The `Dockerfile` clones the latest stable release by default using a dynamic lookup. You can build a specific version using build arguments:
 ```bash
-docker build --build-arg OOYE_VERSION=v1.2.3 -t ooye .
+docker build --build-arg OOYE_VERSION=v3.3 -t ooye .
 ```
+
+---
+
+[See the official User Guide for more information about features →](https://gitdab.com/cadence/out-of-your-element/src/branch/main/docs/user-guide.md)

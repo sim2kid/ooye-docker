@@ -12,10 +12,14 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /app
 
 # Clone the repository
-# We use an ARG for the version/tag so it can be updated during build
-ARG OOYE_VERSION=main
-RUN git clone https://gitdab.com/cadence/out-of-your-element.git . \
-    && git checkout ${OOYE_VERSION}
+# We use an ARG for the version/tag so it can be updated during build.
+# If OOYE_VERSION is "latest", we lookup the latest tag on git.
+ARG OOYE_VERSION=latest
+RUN if [ "${OOYE_VERSION}" = "latest" ]; then \
+        OOYE_VERSION=$(git ls-remote --tags --sort='v:refname' https://gitdab.com/cadence/out-of-your-element.git | grep -v '\^{}' | tail -n1 | sed 's/.*\///'); \
+    fi; \
+    echo "Cloning OOYE version: ${OOYE_VERSION}" && \
+    git clone --depth 1 --branch ${OOYE_VERSION} https://gitdab.com/cadence/out-of-your-element.git .
 
 # Install dependencies
 RUN npm install
