@@ -88,6 +88,54 @@ The image uses a volume mounted at `/data` to store:
 - `ooye.db`: The database file.
 - `registration.yaml`: The Matrix registration file.
 
+## Migration Guide
+
+If you are migrating an existing OOYE installation to Docker, you can move your existing database and registration files into the Docker volume.
+
+> [!WARNING]
+> This docker container is UNOFFICIAL and may be broken. ALWAYS BACK UP YOUR DATA before making ANY changes.
+
+### 1. Identify your files
+Locate your existing `ooye.db` and `registration.yaml` files from your previous installation.
+
+### 2. Move files to the Docker volume
+
+#### Using Docker Compose (Bind Mount)
+If you prefer using a local directory instead of a named volume, update your `docker-compose.yml`:
+
+```yaml
+services:
+  ooye:
+    # ...
+    volumes:
+      - ./ooye_data:/data
+```
+
+Then, simply copy your files into the `./ooye_data` directory on your host:
+```bash
+mkdir -p ooye_data
+cp /path/to/existing/ooye.db ./ooye_data/
+cp /path/to/existing/registration.yaml ./ooye_data/
+```
+
+#### Using Docker CLI (Named Volume)
+If you are using a named volume (e.g., `ooye_data`), you can use a temporary container to copy the files:
+
+```bash
+# Copy ooye.db
+docker run --rm -v ooye_data:/data -v /path/to/existing:/backup alpine cp /backup/ooye.db /data/ooye.db
+
+# Copy registration.yaml
+docker run --rm -v ooye_data:/data -v /path/to/existing:/backup alpine cp /backup/registration.yaml /data/registration.yaml
+```
+
+### 3. Start the container
+Once the files are in place, you can start the bridge normally. It will detect the existing files and use them.
+
+```bash
+docker-compose up -d
+```
+
 ## Configuration
 
 The `Dockerfile` clones the latest stable release by default using a dynamic lookup. You can build a specific version using build arguments:
