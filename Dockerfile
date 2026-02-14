@@ -26,9 +26,8 @@ RUN if [ "${OOYE_VERSION}" = "latest" ]; then \
 # Install dependencies
 RUN npm install
 
-# Create data directory and set as working directory
-RUN mkdir -p /data && chmod 777 /data
-WORKDIR /data
+# Create data directory for persistence
+RUN mkdir /data && chmod 777 /data
 
 # Copy entrypoint script
 COPY entrypoint.sh /usr/local/bin/entrypoint.sh
