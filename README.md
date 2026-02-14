@@ -8,6 +8,8 @@
 > [!IMPORTANT]
 > This is an **UNOFFICIAL** docker release of [Out Of Your Element (OOYE)](https://gitdab.com/cadence/out-of-your-element). For detailed information about the project itself, please visit the [official repository](https://gitdab.com/cadence/out-of-your-element/).
 
+If you need to make a container of your own, the source code for these build can be found at [sim2kid/ooye-docker](https://github.com/sim2kid/ooye-docker).
+
 ## Tags
 
 Automated builds are handled by GitHub Actions and pushed to Docker Hub:
