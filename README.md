@@ -2,9 +2,8 @@
 
 [![Releases](https://img.shields.io/gitea/v/release/cadence/out-of-your-element?gitea_url=https%3A%2F%2Fgitdab.com&style=plastic&color=green)](https://gitdab.com/cadence/out-of-your-element/releases) [![Discuss on Matrix](https://img.shields.io/badge/discuss-%23out--of--your--element-white?style=plastic)](https://matrix.to/#/#out-of-your-element:cadence.moe)
 
-![Nightly Build](https://github.com/sim2kid/ooye-docker/actions/workflows/docker-publish.yml/badge.svg?branch=main&label=nightly)
-![Latest Build](https://github.com/sim2kid/ooye-docker/actions/workflows/docker-publish.yml/badge.svg?branch=main&label=latest)
-![Tagged Build](https://github.com/sim2kid/ooye-docker/actions/workflows/docker-publish.yml/badge.svg?branch=main&label=tagged)
+![Nightly](https://github.com/sim2kid/ooye-docker/actions/workflows/nightly.yml/badge.svg)
+![Container](https://github.com/sim2kid/ooye-docker/actions/workflows/stable.yml/badge.svg)
 
 > [!IMPORTANT]
 > This is an **UNOFFICIAL** docker release of [Out Of Your Element (OOYE)](https://gitdab.com/cadence/out-of-your-element). For detailed information about the project itself, please visit the [official repository](https://gitdab.com/cadence/out-of-your-element/).
@@ -15,6 +14,7 @@ Automated builds are handled by GitHub Actions and pushed to the GitHub Containe
 
 - `latest`: Tracks the latest stable tag from the official OOYE repository (dynamically determined).
 - `nightly`: Tracks the `main` branch of the official OOYE repository (development).
+- `nightly-<date>`: A nightly build from a specific date.
 - `<version>`: Specific versions are tagged according to the official release (e.g., `v3.3`).
 
 ## How to Use

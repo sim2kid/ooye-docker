@@ -1,10 +1,14 @@
-name: Docker Build and Publish
+name: Container
 
 on:
   push:
     branches: [ "main" ]
+    paths-ignore:
+      - 'README.md'
   pull_request:
     branches: [ "main" ]
+    paths-ignore:
+      - 'README.md'
   schedule:
     - cron: '0 0 * * *' # Run daily to check for updates
   workflow_dispatch:
@@ -27,12 +31,6 @@ jobs:
 
     strategy:
       fail-fast: false
-      matrix:
-        include:
-          - build_type: stable
-            enable: true
-          - build_type: nightly
-            enable: ${{ github.event_name == 'schedule' || github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
 
     steps:
       - name: Checkout repository
@@ -49,15 +47,9 @@ jobs:
       - name: Set build variables
         id: vars
         run: |
-          if [ "${{ matrix.build_type }}" == "stable" ]; then
-            VERSION="${{ github.event.inputs.version || steps.get-tag.outputs.tag }}"
-            TAGS=$(printf "type=raw,value=latest\ntype=raw,value=${VERSION}")
-            CHECK_TAG="${VERSION}"
-          else
-            VERSION="main"
-            TAGS="type=raw,value=nightly"
-            CHECK_TAG="nightly"
-          fi
+          VERSION="${{ github.event.inputs.version || steps.get-tag.outputs.tag }}"
+          TAGS=$(printf "type=raw,value=latest\ntype=raw,value=${VERSION}")
+          CHECK_TAG="${VERSION}"
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
           echo "check_tag=${CHECK_TAG}" >> $GITHUB_OUTPUT
           echo "tags<<EOF" >> $GITHUB_OUTPUT
@@ -66,7 +58,6 @@ jobs:
 
       - name: Check if image exists
         id: check-image
-        if: github.event_name == 'schedule'
         run: |
           IMAGE_TAG=${{ steps.vars.outputs.check_tag }}
           FULL_IMAGE_NAME=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${IMAGE_TAG}
@@ -79,7 +70,7 @@ jobs:
           fi
 
       - name: Log in to the Container registry
-        if: (github.event_name != 'schedule' || steps.check-image.outputs.exists != 'true') && matrix.enable == true
+        if: steps.check-image.outputs.exists != 'true'
         uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
@@ -87,7 +78,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Extract metadata (tags, labels) for Docker
-        if: (github.event_name != 'schedule' || steps.check-image.outputs.exists != 'true') && matrix.enable == true
+        if: steps.check-image.outputs.exists != 'true'
         id: meta
         uses: docker/metadata-action@v5
         with:
@@ -95,7 +86,7 @@ jobs:
           tags: ${{ steps.vars.outputs.tags }}
 
       - name: Build and push Docker image
-        if: (github.event_name != 'schedule' || steps.check-image.outputs.exists != 'true') && matrix.enable == true
+        if: steps.check-image.outputs.exists != 'true'
         uses: docker/build-push-action@v5
         with:
           context: .
