@@ -26,10 +26,15 @@ Automated builds are handled by GitHub Actions and pushed to Docker Hub:
 
 First, you need to run the setup to configure the bridge and generate the `registration.yaml` file. This process follows the [official installation instructions](https://gitdab.com/cadence/out-of-your-element/src/branch/main/docs/get-started.md).
 
-Using Docker Compose:
+Using Docker Compose (example [docker-compose.yml](docker-compose.yml)):
 ```bash
 docker-compose run ooye setup
 ```
+
+> [!NOTE]
+> The setup process is a script that must be run inside the container to generate the necessary configuration files.
+> You will need to interact in a console to complete this setup process.
+> Ensure the setup script tells you that it is finished before running normally.
 
 Using Docker CLI:
 ```bash
@@ -38,7 +43,8 @@ docker run -it -v ooye_data:/data sim2kid/ooye-docker:latest setup
 
 Follow the interactive prompts in your terminal.
 
-**Important**: During the setup process, the script will pause and wait for you to register the `registration.yaml` file with your homeserver. Since the setup is still running in your current terminal, you will need to open a **second terminal window** to view the registration file.
+> [!IMPORTANT]
+> During the setup process, the script will pause and wait for you to register the `registration.yaml` file with your homeserver. Since the setup is still running in your current terminal, you will need to open a **second terminal window** to view the registration file.
 
 To view the file while setup is running, execute:
 ```bash
