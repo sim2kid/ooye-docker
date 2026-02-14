@@ -98,3 +98,14 @@ docker build --build-arg OOYE_VERSION=v3.3 -t ooye .
 ---
 
 [See the official User Guide for more information about features →](https://gitdab.com/cadence/out-of-your-element/src/branch/main/docs/user-guide.md)
+
+---
+
+## Issues & Support
+
+If you are having issues running the bridge in container mode, reach out to [@sim2kid:starfallinn.com](https://matrix.to/#/@sim2kid:starfallinn.com) on the [matrix #containers room](https://matrix.to/#/!PkwISXahWEKtmIhrIG:cadence.moe?via=cadence.moe&via=ucc.asn.au&via=starfallinn.com) room.
+
+> As a reminder, this is an **UNOFFICIAL** docker release of [Out Of Your Element (OOYE)](https://gitdab.com/cadence/out-of-your-element).
+> Support for this project is not provided by the developers.
+
+If I am not to be found in the OOYE space, you can try finding me in the [Starfall Inn](https://matrix.to/#/#inn:starfallinn.com).
