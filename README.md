@@ -23,6 +23,10 @@ Automated builds are handled by GitHub Actions and pushed to Docker Hub:
 - `nightly`: Tracks the `main` branch of the official OOYE repository (development).
 - `nightly-<date>`: A nightly build from a specific date.
 - `<version>`: Specific versions are tagged according to the official release (e.g., `v3.3`).
+- `<hash>`: A specific build identified by its git hash.
+
+> [!WARNING]
+> **DO NOT** use the hashed tags for your production setup. These are used for internal tracking and are subject to cleanup. Always prefer `latest`, `nightly`, or a specific version tag.
 
 ## How to Use
 
@@ -158,6 +162,19 @@ The `Dockerfile` clones the latest stable release by default using a dynamic loo
 ```bash
 docker build --build-arg OOYE_VERSION=v3.3 -t ooye .
 ```
+
+## Tag Cleanup Policy
+
+To keep Docker Hub clean, a weekly automated cleanup script runs. The retention policy is configurable in the `.github/workflows/cleanup.yml` workflow:
+
+- **Daily**: Keep the 7 most recent daily tags (`KEEP_DAILY`).
+- **Weekly**: Keep the 4 most recent end-of-week tags (Mondays, ISO standard) (`KEEP_WEEKLY`).
+- **Monthly**: Keep the 12 most recent monthly tags (1st of the month) (`KEEP_MONTHLY`).
+- **Yearly**: Keep the 7 most recent yearly tags (January 1st) (`KEEP_YEARLY`).
+
+If a tag fulfills any of these roles, it remains. 
+
+Additionally, all **hashed tags** are removed, except for the one currently associated with the `latest` tag.
 
 ---
 

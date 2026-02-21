@@ -1,0 +1,36 @@
+name: Cleanup Docker Hub
+
+on:
+  schedule:
+    - cron: '0 2 * * 0' # Run every Sunday at 2:00 AM
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry Run (do not actually delete tags)'
+        required: true
+        default: 'false'
+        type: boolean
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run cleanup script
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+          DOCKER_REPOSITORY: sim2kid/ooye-docker
+          DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
+          KEEP_DAILY: 7
+          KEEP_WEEKLY: 4
+          KEEP_MONTHLY: 12
+          KEEP_YEARLY: 7
+        run: node scripts/cleanup-dockerhub.mjs
