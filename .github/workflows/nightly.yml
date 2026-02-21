@@ -40,7 +40,10 @@ jobs:
         run: |
           IMAGE_TAG=${{ steps.vars.outputs.date_tag }}
           FULL_IMAGE_NAME=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${IMAGE_TAG}
-          if docker pull ${FULL_IMAGE_NAME} 2>/dev/null; then
+          if [ "${{ github.event_name }}" = "push" ]; then
+            echo "exists=false" >> $GITHUB_OUTPUT
+            echo "Triggered by push to main. Forcing build."
+          elif docker pull ${FULL_IMAGE_NAME} 2>/dev/null; then
             echo "exists=true" >> $GITHUB_OUTPUT
             echo "Image ${FULL_IMAGE_NAME} already exists. Skipping build."
           else

@@ -39,58 +39,127 @@ jobs:
       - name: Get latest OOYE tag
         id: get-tag
         run: |
-          LATEST_TAG=$(git ls-remote --tags --sort='v:refname' https://gitdab.com/cadence/out-of-your-element.git | grep -v '\{\}' | tail -n1 | sed 's/.*\///')
-          if [ -z "$LATEST_TAG" ]; then LATEST_TAG="main"; fi
+          LATEST_REF=$(git ls-remote --tags --sort='v:refname' https://gitdab.com/cadence/out-of-your-element.git | grep -v '\{\}' | tail -n1)
+          LATEST_HASH=$(echo "$LATEST_REF" | awk '{print $1}')
+          LATEST_TAG=$(echo "$LATEST_REF" | sed 's/.*\///')
+          if [ -z "$LATEST_TAG" ]; then 
+            LATEST_TAG="main"
+            LATEST_HASH=$(git ls-remote --heads https://gitdab.com/cadence/out-of-your-element.git refs/heads/main | awk '{print $1}')
+          fi
           echo "tag=${LATEST_TAG}" >> $GITHUB_OUTPUT
-          echo "Latest tag found: ${LATEST_TAG}"
+          echo "hash=${LATEST_HASH}" >> $GITHUB_OUTPUT
+          echo "Latest tag found: ${LATEST_TAG} (${LATEST_HASH})"
 
       - name: Set build variables
         id: vars
         run: |
           VERSION="${{ github.event.inputs.version || steps.get-tag.outputs.tag }}"
-          TAGS=$(printf "type=raw,value=latest\ntype=raw,value=${VERSION}")
-          CHECK_TAG="${VERSION}"
+          HASH="${{ steps.get-tag.outputs.hash }}"
+          
+          # If version is not the same as the latest tag, we need to fetch its hash
+          if [ "$VERSION" != "${{ steps.get-tag.outputs.tag }}" ] && [ "$VERSION" != "latest" ]; then
+             HASH=$(git ls-remote --tags https://gitdab.com/cadence/out-of-your-element.git "refs/tags/${VERSION}" | head -n1 | awk '{print $1}')
+             # Fallback to head if not found as tag
+             if [ -z "$HASH" ]; then
+               HASH=$(git ls-remote --heads https://gitdab.com/cadence/out-of-your-element.git "refs/heads/${VERSION}" | head -n1 | awk '{print $1}')
+             fi
+          fi
+          
           echo "version=${VERSION}" >> $GITHUB_OUTPUT
-          echo "check_tag=${CHECK_TAG}" >> $GITHUB_OUTPUT
-          echo "tags<<EOF" >> $GITHUB_OUTPUT
-          echo -e "$TAGS" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          echo "hash=${HASH}" >> $GITHUB_OUTPUT
 
       - name: Check if image exists
         id: check-image
         run: |
-          IMAGE_TAG=${{ steps.vars.outputs.check_tag }}
-          FULL_IMAGE_NAME=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${IMAGE_TAG}
-          if docker pull ${FULL_IMAGE_NAME} 2>/dev/null; then
-            echo "exists=true" >> $GITHUB_OUTPUT
-            echo "Image ${FULL_IMAGE_NAME} already exists. Skipping build."
-          else
-            echo "exists=false" >> $GITHUB_OUTPUT
-            echo "Image ${FULL_IMAGE_NAME} does not exist. Proceeding with build."
+          VERSION="${{ steps.vars.outputs.version }}"
+          HASH="${{ steps.vars.outputs.hash }}"
+          IMAGE_NAME="${{ env.IMAGE_NAME }}"
+          
+          BUILD_REQUIRED=true
+          PUSH_HASH_TAG=true
+          PUSH_VERSION_TAG=true
+          PUSH_LATEST_TAG=true
+          
+          if [ "${{ github.event_name }}" = "push" ]; then
+            echo "Triggered by push to main. Forcing build."
+            echo "build_required=true" >> $GITHUB_OUTPUT
+            echo "push_hash_tag=true" >> $GITHUB_OUTPUT
+            echo "push_version_tag=true" >> $GITHUB_OUTPUT
+            echo "push_latest_tag=true" >> $GITHUB_OUTPUT
+            exit 0
           fi
+          
+          # Check if hash tag exists
+          if docker pull "${IMAGE_NAME}:${HASH}" 2>/dev/null; then
+            echo "Image with hash ${HASH} already exists. Skipping build."
+            BUILD_REQUIRED=false
+            PUSH_HASH_TAG=false
+          else
+            echo "Image with hash ${HASH} does not exist. Build required."
+          fi
+          
+          # Check if version tag exists and points to the same hash
+          if [ "$BUILD_REQUIRED" = "false" ] && [ "$VERSION" != "latest" ]; then
+            if docker pull "${IMAGE_NAME}:${VERSION}" 2>/dev/null; then
+              V_HASH=$(docker inspect --format='{{index .RepoDigests 0}}' "${IMAGE_NAME}:${VERSION}" | cut -d'@' -f2 || echo "none")
+              H_HASH=$(docker inspect --format='{{index .RepoDigests 0}}' "${IMAGE_NAME}:${HASH}" | cut -d'@' -f2 || echo "none")
+              if [ "$V_HASH" = "$H_HASH" ] && [ "$V_HASH" != "none" ]; then
+                echo "Version tag ${VERSION} already points to the correct hash. Skipping tag update."
+                PUSH_VERSION_TAG=false
+              fi
+            fi
+          fi
+          
+          # Check if latest tag exists and points to the same hash
+          if [ "$BUILD_REQUIRED" = "false" ]; then
+            if docker pull "${IMAGE_NAME}:latest" 2>/dev/null; then
+              L_HASH=$(docker inspect --format='{{index .RepoDigests 0}}' "${IMAGE_NAME}:latest" | cut -d'@' -f2 || echo "none")
+              H_HASH=$(docker inspect --format='{{index .RepoDigests 0}}' "${IMAGE_NAME}:${HASH}" | cut -d'@' -f2 || echo "none")
+              if [ "$L_HASH" = "$H_HASH" ] && [ "$L_HASH" != "none" ]; then
+                echo "Latest tag already points to the correct hash. Skipping tag update."
+                PUSH_LATEST_TAG=false
+              fi
+            fi
+          fi
+          
+          echo "build_required=${BUILD_REQUIRED}" >> $GITHUB_OUTPUT
+          echo "push_hash_tag=${PUSH_HASH_TAG}" >> $GITHUB_OUTPUT
+          echo "push_version_tag=${PUSH_VERSION_TAG}" >> $GITHUB_OUTPUT
+          echo "push_latest_tag=${PUSH_LATEST_TAG}" >> $GITHUB_OUTPUT
 
       - name: Log in to Docker Hub
-        if: steps.check-image.outputs.exists != 'true'
+        if: steps.check-image.outputs.build_required == 'true' || steps.check-image.outputs.push_hash_tag == 'true' || steps.check-image.outputs.push_version_tag == 'true' || steps.check-image.outputs.push_latest_tag == 'true'
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Extract metadata (tags, labels) for Docker
-        if: steps.check-image.outputs.exists != 'true'
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.IMAGE_NAME }}
-          tags: ${{ steps.vars.outputs.tags }}
-
-      - name: Build and push Docker image
-        if: steps.check-image.outputs.exists != 'true'
+      - name: Build and push Hash Tag
+        if: steps.check-image.outputs.build_required == 'true' || steps.check-image.outputs.push_hash_tag == 'true'
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ${{ env.IMAGE_NAME }}:${{ steps.vars.outputs.hash }}
+          build-args: |
+            OOYE_VERSION=${{ steps.vars.outputs.version }}
+
+      - name: Push Version Tag
+        if: steps.check-image.outputs.push_version_tag == 'true' && steps.vars.outputs.version != 'latest'
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ env.IMAGE_NAME }}:${{ steps.vars.outputs.version }}
+          build-args: |
+            OOYE_VERSION=${{ steps.vars.outputs.version }}
+
+      - name: Push Latest Tag
+        if: steps.check-image.outputs.push_latest_tag == 'true'
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ env.IMAGE_NAME }}:latest
           build-args: |
             OOYE_VERSION=${{ steps.vars.outputs.version }}
